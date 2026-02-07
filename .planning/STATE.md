@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 Phase: 2 of 5 (UI Polish & UX Hardening)
 Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-07 -- Completed 02-02-PLAN.md (parallel with 02-03, 02-04)
+Last activity: 2026-02-07 -- Completed 02-04-PLAN.md
 
 Progress: [████████████████████████████████████████████░] 44% (8/18 plans)
 
@@ -52,6 +52,7 @@ Recent decisions affecting current work:
 - 02-01: Used keyof typeof Ionicons.glyphMap for type-safe icon names in tab bar
 - 02-02: Kept DashboardScreen manual error pattern (already best); borderRadius hierarchy: xl for cards, lg for buttons, md for small buttons; replaced all text chevrons with Ionicons
 - 02-03: NetworkBanner in both login/auth branches; QueryClient retry max 2 for queries, 0 for mutations; Fragment wrappers to avoid extra layout nodes
+- 02-04: Kept Alert.alert for non-validation (photo permission, save errors); client picker uses custom error styling to match FormField; touched on picker close matches onBlur pattern
 
 ### Pending Todos
 
@@ -65,5 +66,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 02-02-PLAN.md (02-01 through 02-04 done, 02-05 remaining)
+Stopped at: Completed 02-04-PLAN.md (02-01 through 02-04 done, 02-05 remaining)
 Resume file: None
