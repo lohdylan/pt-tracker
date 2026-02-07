@@ -5,32 +5,32 @@
 See: .planning/PROJECT.md (updated 2026-02-07)
 
 **Core value:** Clients can open the app, see their workout info and exercise videos, and stay connected with their trainer -- all in one place.
-**Current focus:** Phase 1 - Feature Verification
+**Current focus:** Phase 1 complete — ready for Phase 2 and Phase 3
 
 ## Current Position
 
-Phase: 1 of 5 (Feature Verification)
-Plan: 3 of 4 in current phase
-Status: Executing Wave 3 (plan 01-04)
-Last activity: 2026-02-07 -- Completed 01-02 (photos) and 01-03 (messaging)
+Phase: 1 of 5 (Feature Verification) — COMPLETE
+Plan: 4 of 4 in current phase
+Status: Phase complete, pending verification
+Last activity: 2026-02-07 -- Completed 01-04 (push notifications)
 
-Progress: [████████████░░░░] 75%
+Progress: [████████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: ~4 min
-- Total execution time: ~11 min
+- Total execution time: ~16 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 3/4 | ~11 min | ~4 min |
+| 1 | 4/4 | ~16 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~5 min), 01-02 (~3 min), 01-03 (~3 min)
+- Last 5 plans: 01-01 (~5m), 01-02 (~3m), 01-03 (~3m), 01-04 (~5m)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -47,6 +47,7 @@ Recent decisions affecting current work:
 - 01-01: No code changes needed — DEV_HOST IP already correct, workout logging code review found no bugs
 - 01-02: PhotoComparisonScreen guard changed from !sorted.length to sorted.length < 2
 - 01-03: Used useLayoutEffect for client redirect, extracted markAsRead.mutate to stable ref
+- 01-04: session_scheduled notifications always send (no preference check), notification tap routing is role-aware
 
 ### Pending Todos
 
@@ -60,5 +61,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 01-02 and 01-03 (Wave 2), executing Wave 3 (01-04)
+Stopped at: Phase 1 complete, running phase verification
 Resume file: None
