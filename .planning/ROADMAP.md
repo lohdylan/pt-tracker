@@ -50,7 +50,7 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Theme extensions, shared UI components, Ionicons tab icons, netinfo install
+- [x] 02-01-PLAN.md -- Theme extensions, shared UI components, Ionicons tab icons, netinfo install
 - [ ] 02-02-PLAN.md -- Trainer screens: styling consistency, error retry, empty states
 - [ ] 02-03-PLAN.md -- Client screens: error retry, LoginScreen fixes, NetworkBanner + QueryClient
 - [ ] 02-04-PLAN.md -- Inline form validation on all 4 form screens (replacing Alert popups)
@@ -113,7 +113,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Feature Verification | 4/4 | ✓ Complete | 2026-02-07 |
-| 2. UI Polish & UX Hardening | 0/5 | Not started | - |
+| 2. UI Polish & UX Hardening | 1/5 | In progress | - |
 | 3. Production Infrastructure | 0/3 | Not started | - |
 | 4. App Store Preparation | 0/4 | Not started | - |
 | 5. App Store Submission | 0/2 | Not started | - |
