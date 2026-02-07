@@ -4,7 +4,8 @@ import { NavigationContainer, useNavigationContainerRef } from "@react-navigatio
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Text, View, ActivityIndicator, StyleSheet } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { colors } from "./src/theme";
 import { AuthProvider, useAuth } from "./src/AuthContext";
 import LogoutButton from "./src/components/LogoutButton";
@@ -268,32 +269,31 @@ function ClientMessagesNavigator() {
 }
 
 // ── Tab icons ──
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    Home: "🏠",
-    Clients: "👥",
-    Calendar: "📅",
-    Workouts: "💪",
-    Exercises: "📖",
-    Messages: "💬",
-    Sessions: "📅",
-    Progress: "📈",
-    Logs: "📋",
-  };
-  return (
-    <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>
-      {icons[label] || "•"}
-    </Text>
-  );
+const iconMap: Record<string, { focused: keyof typeof Ionicons.glyphMap; unfocused: keyof typeof Ionicons.glyphMap }> = {
+  Home: { focused: "home", unfocused: "home-outline" },
+  Clients: { focused: "people", unfocused: "people-outline" },
+  Calendar: { focused: "calendar", unfocused: "calendar-outline" },
+  Workouts: { focused: "barbell", unfocused: "barbell-outline" },
+  Exercises: { focused: "book", unfocused: "book-outline" },
+  Messages: { focused: "chatbubbles", unfocused: "chatbubbles-outline" },
+  Sessions: { focused: "calendar", unfocused: "calendar-outline" },
+  Progress: { focused: "trending-up", unfocused: "trending-up-outline" },
+  Logs: { focused: "clipboard", unfocused: "clipboard-outline" },
+};
+
+function TabIcon({ label, focused, color, size }: { label: string; focused: boolean; color: string; size: number }) {
+  const entry = iconMap[label];
+  const iconName = entry ? (focused ? entry.focused : entry.unfocused) : "ellipse-outline";
+  return <Ionicons name={iconName} size={size} color={color} />;
 }
 
 // ── Messages tab icon with unread badge ──
-function MessagesTabIcon({ focused }: { focused: boolean }) {
+function MessagesTabIcon({ focused, color, size }: { focused: boolean; color: string; size: number }) {
   const { data } = useUnreadCount();
   const count = data?.count || 0;
   return (
     <View>
-      <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>💬</Text>
+      <Ionicons name={focused ? "chatbubbles" : "chatbubbles-outline"} size={size} color={color} />
       <UnreadBadge count={count} />
     </View>
   );
@@ -305,10 +305,10 @@ function TrainerTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({ focused }) =>
+        tabBarIcon: ({ focused, color, size }) =>
           route.name === "Messages"
-            ? <MessagesTabIcon focused={focused} />
-            : <TabIcon label={route.name} focused={focused} />,
+            ? <MessagesTabIcon focused={focused} color={color} size={size} />
+            : <TabIcon label={route.name} focused={focused} color={color} size={size} />,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.secondary,
       })}
@@ -328,10 +328,10 @@ function ClientTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({ focused }) =>
+        tabBarIcon: ({ focused, color, size }) =>
           route.name === "Messages"
-            ? <MessagesTabIcon focused={focused} />
-            : <TabIcon label={route.name} focused={focused} />,
+            ? <MessagesTabIcon focused={focused} color={color} size={size} />
+            : <TabIcon label={route.name} focused={focused} color={color} size={size} />,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.secondary,
       })}
