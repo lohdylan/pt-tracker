@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTemplates, useDeleteTemplate } from '../../hooks/useTemplates';
-import { colors, spacing, fontSize } from '../../theme';
+import { colors, spacing, fontSize, borderRadius, shadows } from '../../theme';
 import type { WorkoutTemplate } from '../../types';
 
 type NavProp = NativeStackNavigationProp<{
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   row: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
+    borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
     flexDirection: 'row',
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
   },
   emptyButtonText: {
     color: colors.surface,
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
   },
   retryButtonText: {
     color: colors.surface,
@@ -243,11 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
+    ...shadows.lg,
   },
   fabText: {
     fontSize: 28,

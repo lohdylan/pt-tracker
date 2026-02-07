@@ -13,12 +13,14 @@ import { useConversations } from "../../hooks/useMessages";
 import { useAuth } from "../../AuthContext";
 import { UPLOADS_BASE } from "../../api";
 import { colors, spacing, fontSize } from "../../theme";
+import ErrorState from "../../components/ErrorState";
+import EmptyState from "../../components/EmptyState";
 import type { Conversation } from "../../types";
 
 export default function ConversationListScreen() {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
-  const { data: conversations, isLoading } = useConversations();
+  const { data: conversations, isLoading, isError, error, refetch } = useConversations();
 
   const handlePress = useCallback(
     (clientId: number, name: string) => {
@@ -91,6 +93,10 @@ export default function ConversationListScreen() {
     );
   }
 
+  if (isError) {
+    return <ErrorState message="Failed to load conversations" detail={(error as Error)?.message} onRetry={refetch} />;
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -99,9 +105,11 @@ export default function ConversationListScreen() {
         renderItem={renderItem}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>No conversations yet</Text>
-          </View>
+          <EmptyState
+            icon="chatbubbles-outline"
+            title="No conversations yet"
+            subtitle="Messages with your clients will appear here"
+          />
         }
       />
     </View>
@@ -139,6 +147,4 @@ const styles = StyleSheet.create({
     justifyContent: "center", alignItems: "center", paddingHorizontal: 6,
   },
   badgeText: { color: "#fff", fontSize: 11, fontWeight: "700" },
-  empty: { flex: 1, justifyContent: "center", alignItems: "center", paddingTop: spacing.xl * 3 },
-  emptyText: { fontSize: fontSize.md, color: colors.textSecondary },
 });

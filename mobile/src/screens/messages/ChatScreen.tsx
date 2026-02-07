@@ -14,6 +14,8 @@ import { useRoute } from "@react-navigation/native";
 import { useMessages, useSendMessage, useMarkAsRead } from "../../hooks/useMessages";
 import { useAuth } from "../../AuthContext";
 import { colors, spacing, fontSize } from "../../theme";
+import ErrorState from "../../components/ErrorState";
+import EmptyState from "../../components/EmptyState";
 import type { Message } from "../../types";
 
 export default function ChatScreen() {
@@ -23,7 +25,7 @@ export default function ChatScreen() {
   const [text, setText] = useState("");
   const flatListRef = useRef<FlatList>(null);
 
-  const { data: messages, isLoading } = useMessages(clientId);
+  const { data: messages, isLoading, isError, error, refetch } = useMessages(clientId);
   const sendMessage = useSendMessage(clientId);
   const markAsRead = useMarkAsRead(clientId);
 
@@ -73,6 +75,10 @@ export default function ChatScreen() {
     );
   }
 
+  if (isError) {
+    return <ErrorState message="Failed to load messages" detail={(error as Error)?.message} onRetry={refetch} />;
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -87,9 +93,11 @@ export default function ChatScreen() {
         contentContainerStyle={styles.messageList}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Start a conversation</Text>
-          </View>
+          <EmptyState
+            icon="chatbubble-outline"
+            title="Start a conversation"
+            subtitle="Send a message to begin chatting"
+          />
         }
       />
       <View style={styles.inputRow}>
@@ -172,6 +180,4 @@ const styles = StyleSheet.create({
   },
   sendDisabled: { backgroundColor: colors.disabled },
   sendText: { color: "#fff", fontSize: fontSize.md, fontWeight: "600" },
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center", paddingTop: spacing.xl * 4 },
-  emptyText: { fontSize: fontSize.md, color: colors.textSecondary },
 });
