@@ -52,7 +52,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md -- Theme extensions, shared UI components, Ionicons tab icons, netinfo install
 - [ ] 02-02-PLAN.md -- Trainer screens: styling consistency, error retry, empty states
-- [ ] 02-03-PLAN.md -- Client screens: error retry, LoginScreen fixes, NetworkBanner + QueryClient
+- [x] 02-03-PLAN.md -- Client screens: error retry, LoginScreen fixes, NetworkBanner + QueryClient
 - [ ] 02-04-PLAN.md -- Inline form validation on all 4 form screens (replacing Alert popups)
 - [ ] 02-05-PLAN.md -- Client onboarding flow (4-page swiper) + visual verification
 

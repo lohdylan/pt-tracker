@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 2 of 5 (UI Polish & UX Hardening)
-Plan: 1 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-07 -- Completed 02-01-PLAN.md
+Last activity: 2026-02-07 -- Completed 02-03-PLAN.md
 
-Progress: [█████████████████████░░░░] 28% (5/18 plans)
+Progress: [████████████████████████░] 33% (6/18 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~3.6 min
-- Total execution time: ~18 min
+- Total plans completed: 6
+- Average duration: ~3.3 min
+- Total execution time: ~20 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 4/4 | ~16 min | ~4 min |
-| 2 | 1/5 | ~2 min | ~2 min |
+| 2 | 2/5 | ~4 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (~3m), 01-03 (~3m), 01-04 (~5m), 02-01 (~2m)
+- Last 5 plans: 01-03 (~3m), 01-04 (~5m), 02-01 (~2m), 02-03 (~2m)
 - Trend: stable to improving
 
 *Updated after each plan completion*
@@ -50,6 +50,7 @@ Recent decisions affecting current work:
 - 01-03: Used useLayoutEffect for client redirect, extracted markAsRead.mutate to stable ref
 - 01-04: session_scheduled notifications always send (no preference check), notification tap routing is role-aware
 - 02-01: Used keyof typeof Ionicons.glyphMap for type-safe icon names in tab bar
+- 02-03: NetworkBanner in both login/auth branches; QueryClient retry max 2 for queries, 0 for mutations; Fragment wrappers to avoid extra layout nodes
 
 ### Pending Todos
 
@@ -63,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 02-01-PLAN.md
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
