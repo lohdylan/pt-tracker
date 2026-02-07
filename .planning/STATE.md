@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 1 of 5 (Feature Verification)
-Plan: 1 of 4 in current phase
-Status: Executing Wave 2 (plans 01-02, 01-03)
-Last activity: 2026-02-07 -- Completed 01-01 (DEV_HOST + workout logging verification)
+Plan: 3 of 4 in current phase
+Status: Executing Wave 3 (plan 01-04)
+Last activity: 2026-02-07 -- Completed 01-02 (photos) and 01-03 (messaging)
 
-Progress: [████░░░░░░░░░░░░] 25%
+Progress: [████████████░░░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: ~5 min
-- Total execution time: ~5 min
+- Total plans completed: 3
+- Average duration: ~4 min
+- Total execution time: ~11 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 1/4 | ~5 min | ~5 min |
+| 1 | 3/4 | ~11 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~5 min)
-- Trend: --
+- Last 5 plans: 01-01 (~5 min), 01-02 (~3 min), 01-03 (~3 min)
+- Trend: stable
 
 *Updated after each plan completion*
 
@@ -45,6 +45,8 @@ Recent decisions affecting current work:
 - All 4 new features are code-complete server-side with migrations applied; mobile testing is the remaining gap
 - Server endpoints all verified working via curl with trainer token
 - 01-01: No code changes needed — DEV_HOST IP already correct, workout logging code review found no bugs
+- 01-02: PhotoComparisonScreen guard changed from !sorted.length to sorted.length < 2
+- 01-03: Used useLayoutEffect for client redirect, extracted markAsRead.mutate to stable ref
 
 ### Pending Todos
 
@@ -58,5 +60,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 01-01, executing Wave 2 (01-02, 01-03)
+Stopped at: Completed 01-02 and 01-03 (Wave 2), executing Wave 3 (01-04)
 Resume file: None
