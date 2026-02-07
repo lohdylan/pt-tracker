@@ -10,6 +10,7 @@ import { colors } from "./src/theme";
 import { AuthProvider, useAuth } from "./src/AuthContext";
 import LogoutButton from "./src/components/LogoutButton";
 import UnreadBadge from "./src/components/UnreadBadge";
+import NetworkBanner from "./src/components/NetworkBanner";
 import { useUnreadCount } from "./src/hooks/useMessages";
 import { requestNotificationPermission, addNotificationResponseListener } from "./src/services/notifications";
 import { useRegisterPushToken, useUnregisterPushToken } from "./src/hooks/useNotifications";
@@ -53,7 +54,20 @@ import NotificationSettingsScreen from "./src/screens/settings/NotificationSetti
 // Auth
 import LoginScreen from "./src/screens/auth/LoginScreen";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        // Don't retry if offline (network request failed)
+        if (error instanceof Error && error.message.includes('Network request failed')) return false;
+        return failureCount < 2;
+      },
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
 
 // ── Trainer stack params ──
 type HomeStackParams = {
@@ -396,13 +410,21 @@ function AppContent() {
   }
 
   if (!user) {
-    return <LoginScreen />;
+    return (
+      <>
+        <NetworkBanner />
+        <LoginScreen />
+      </>
+    );
   }
 
   return (
-    <NavigationContainer ref={navigationRef}>
-      {user.role === "trainer" ? <TrainerTabs /> : <ClientTabs />}
-    </NavigationContainer>
+    <>
+      <NetworkBanner />
+      <NavigationContainer ref={navigationRef}>
+        {user.role === "trainer" ? <TrainerTabs /> : <ClientTabs />}
+      </NavigationContainer>
+    </>
   );
 }
 
