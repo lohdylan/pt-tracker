@@ -29,13 +29,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Trainer and client can upload progress photos, view them in a timeline, and use the side-by-side comparison screen
   3. Client receives a push notification when a session is scheduled or a measurement is recorded, and tapping the notification opens the relevant screen
   4. Trainer and client can exchange messages in real time, unread badges update correctly, and conversation history persists
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: Test and fix workout logging UX
-- [ ] 01-02: Test and fix progress photos
-- [ ] 01-03: Test and fix push notifications
-- [ ] 01-04: Test and fix messaging
+- [ ] 01-01-PLAN.md -- Fix DEV_HOST IP and verify workout logging UX on device
+- [ ] 01-02-PLAN.md -- Fix photo comparison edge case and verify progress photos on device
+- [ ] 01-03-PLAN.md -- Fix messaging bugs and verify bidirectional messaging on device
+- [ ] 01-04-PLAN.md -- Configure EAS/push, add session notification, verify push notifications via dev build
 
 ### Phase 2: UI Polish & UX Hardening
 **Goal**: Every screen in the app looks professionally designed and handles loading, empty, and error states gracefully
@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Feature Verification | 0/4 | Not started | - |
+| 1. Feature Verification | 0/4 | Planned | - |
 | 2. UI Polish & UX Hardening | 0/3 | Not started | - |
 | 3. Production Infrastructure | 0/3 | Not started | - |
 | 4. App Store Preparation | 0/4 | Not started | - |
