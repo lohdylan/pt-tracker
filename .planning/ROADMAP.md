@@ -47,12 +47,14 @@ Plans:
   3. Disconnecting from the network and performing any action shows a clear error message (not a crash or silent failure)
   4. A new client logging in for the first time sees an onboarding flow that explains what the app does and how to navigate it
   5. Form inputs validate inline (e.g., empty fields, invalid formats) and display errors before submission
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 02-01: Design system and consistent styling pass across all screens
-- [ ] 02-02: Loading states, empty states, and error handling across all screens
-- [ ] 02-03: Client onboarding flow
+- [ ] 02-01-PLAN.md -- Theme extensions, shared UI components, Ionicons tab icons, netinfo install
+- [ ] 02-02-PLAN.md -- Trainer screens: styling consistency, error retry, empty states
+- [ ] 02-03-PLAN.md -- Client screens: error retry, LoginScreen fixes, NetworkBanner + QueryClient
+- [ ] 02-04-PLAN.md -- Inline form validation on all 4 form screens (replacing Alert popups)
+- [ ] 02-05-PLAN.md -- Client onboarding flow (4-page swiper) + visual verification
 
 ### Phase 3: Production Infrastructure
 **Goal**: The API and database are running in production with HTTPS, proper secrets, and basic monitoring
@@ -111,7 +113,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Feature Verification | 4/4 | ✓ Complete | 2026-02-07 |
-| 2. UI Polish & UX Hardening | 0/3 | Not started | - |
+| 2. UI Polish & UX Hardening | 0/5 | Not started | - |
 | 3. Production Infrastructure | 0/3 | Not started | - |
 | 4. App Store Preparation | 0/4 | Not started | - |
 | 5. App Store Submission | 0/2 | Not started | - |
