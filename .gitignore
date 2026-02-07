@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.expo/
+uploads/*
+!uploads/.gitkeep
+*.tsbuildinfo

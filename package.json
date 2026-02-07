@@ -1,0 +1,5 @@
+{
+  "name": "pt-tracker",
+  "private": true,
+  "workspaces": ["server", "mobile"]
+}
