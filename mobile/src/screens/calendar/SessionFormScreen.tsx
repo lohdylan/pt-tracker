@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   FlatList,
   Modal,
@@ -18,6 +17,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSession, useCreateSession, useUpdateSession } from '../../hooks/useSessions';
 import { useClients } from '../../hooks/useClients';
 import { colors, spacing, fontSize } from '../../theme';
+import FormField from '../../components/FormField';
 import type { Client } from '../../types';
 
 type RootStackParamList = {
@@ -46,6 +46,25 @@ function SessionFormScreen() {
   const [duration, setDuration] = useState<string>('60');
   const [notes, setNotes] = useState<string>('');
   const [clientPickerVisible, setClientPickerVisible] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const validate = useCallback((): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (!selectedClient) errs.client = 'Please select a client';
+    if (!dateTime.trim()) errs.dateTime = 'Date is required';
+    if (!duration.trim()) {
+      errs.duration = 'Duration is required';
+    } else {
+      const durationNum = parseInt(duration, 10);
+      if (isNaN(durationNum) || durationNum <= 0) errs.duration = 'Duration must be a positive number';
+    }
+    return errs;
+  }, [selectedClient, dateTime, duration]);
+
+  const errors = validate();
+  const showError = (field: string) => (touched[field] || submitted) ? errors[field] : undefined;
+  const handleBlur = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
 
   useEffect(() => {
     if (isEditing && existingSession) {
@@ -75,22 +94,13 @@ function SessionFormScreen() {
   }, [routeClientId, clients]);
 
   const handleSave = useCallback(() => {
-    if (!selectedClient) {
-      Alert.alert('Validation Error', 'Please select a client.');
-      return;
-    }
-    if (!dateTime.trim()) {
-      Alert.alert('Validation Error', 'Please enter a date and time.');
-      return;
-    }
-    const durationNum = parseInt(duration, 10);
-    if (isNaN(durationNum) || durationNum <= 0) {
-      Alert.alert('Validation Error', 'Please enter a valid duration.');
-      return;
-    }
+    setSubmitted(true);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) return;
 
+    const durationNum = parseInt(duration, 10);
     const payload = {
-      client_id: selectedClient.id,
+      client_id: selectedClient!.id,
       scheduled_at: dateTime.trim(),
       duration_min: durationNum,
       notes: notes.trim() || undefined,
@@ -110,7 +120,7 @@ function SessionFormScreen() {
         onError: () => Alert.alert('Error', 'Failed to create session.'),
       });
     }
-  }, [selectedClient, dateTime, duration, notes, isEditing, sessionId, updateSession, createSession, navigation]);
+  }, [selectedClient, dateTime, duration, notes, isEditing, sessionId, updateSession, createSession, navigation, validate]);
 
   const isSaving = createSession.isPending || updateSession.isPending;
 
@@ -130,50 +140,46 @@ function SessionFormScreen() {
         <Text style={styles.title}>{isEditing ? 'Edit Session' : 'New Session'}</Text>
 
         <View style={styles.field}>
-          <Text style={styles.label}>Client *</Text>
-          <TouchableOpacity style={styles.pickerButton} onPress={() => setClientPickerVisible(true)}>
+          <Text style={styles.pickerLabel}>Client *</Text>
+          <TouchableOpacity style={[styles.pickerButton, showError('client') && styles.pickerButtonError]} onPress={() => setClientPickerVisible(true)}>
             <Text style={[styles.pickerButtonText, !selectedClient && styles.placeholderText]}>
               {selectedClient ? clientDisplayName(selectedClient) : 'Select a client'}
             </Text>
           </TouchableOpacity>
+          {showError('client') && <Text style={styles.errorText}>{showError('client')}</Text>}
         </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Date & Time *</Text>
-          <TextInput
-            style={styles.input}
-            value={dateTime}
-            onChangeText={setDateTime}
-            placeholder="YYYY-MM-DD HH:MM"
-            placeholderTextColor={colors.disabled}
-          />
-        </View>
+        <FormField
+          label="Date & Time"
+          required
+          value={dateTime}
+          onChangeText={setDateTime}
+          onBlur={() => handleBlur('dateTime')}
+          error={showError('dateTime')}
+          placeholder="YYYY-MM-DD HH:MM"
+        />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Duration (minutes)</Text>
-          <TextInput
-            style={styles.input}
-            value={duration}
-            onChangeText={setDuration}
-            placeholder="60"
-            placeholderTextColor={colors.disabled}
-            keyboardType="numeric"
-          />
-        </View>
+        <FormField
+          label="Duration (minutes)"
+          required
+          value={duration}
+          onChangeText={setDuration}
+          onBlur={() => handleBlur('duration')}
+          error={showError('duration')}
+          placeholder="60"
+          keyboardType="numeric"
+        />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Notes</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="Session notes..."
-            placeholderTextColor={colors.disabled}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
-        </View>
+        <FormField
+          label="Notes"
+          value={notes}
+          onChangeText={setNotes}
+          placeholder="Session notes..."
+          multiline
+          numberOfLines={4}
+          style={styles.textArea}
+          textAlignVertical="top"
+        />
 
         <TouchableOpacity
           style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
@@ -188,11 +194,11 @@ function SessionFormScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      <Modal visible={clientPickerVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setClientPickerVisible(false)}>
+      <Modal visible={clientPickerVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => { setClientPickerVisible(false); setTouched(prev => ({ ...prev, client: true })); }}>
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select Client</Text>
-            <TouchableOpacity onPress={() => setClientPickerVisible(false)}>
+            <TouchableOpacity onPress={() => { setClientPickerVisible(false); setTouched(prev => ({ ...prev, client: true })); }}>
               <Text style={styles.modalClose}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -209,7 +215,7 @@ function SessionFormScreen() {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[styles.clientItem, selectedClient?.id === item.id && styles.clientItemSelected]}
-                  onPress={() => { setSelectedClient(item); setClientPickerVisible(false); }}
+                  onPress={() => { setSelectedClient(item); setClientPickerVisible(false); setTouched(prev => ({ ...prev, client: true })); }}
                 >
                   <Text style={[styles.clientItemText, selectedClient?.id === item.id && styles.clientItemTextSelected]}>
                     {clientDisplayName(item)}
@@ -231,10 +237,11 @@ const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   title: { fontSize: fontSize.xxl, fontWeight: '700', color: colors.text, marginBottom: spacing.lg },
   field: { marginBottom: spacing.md },
-  label: { fontSize: fontSize.sm, fontWeight: '600', color: colors.textSecondary, marginBottom: spacing.xs, textTransform: 'uppercase', letterSpacing: 0.5 },
-  input: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 10, paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 4, fontSize: fontSize.md, color: colors.text },
+  pickerLabel: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: spacing.xs },
   textArea: { minHeight: 100, paddingTop: spacing.sm + 4 },
   pickerButton: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 10, paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 4 },
+  pickerButtonError: { borderColor: colors.danger },
+  errorText: { fontSize: fontSize.sm, color: colors.danger, marginTop: spacing.xs },
   pickerButtonText: { fontSize: fontSize.md, color: colors.text },
   placeholderText: { color: colors.disabled },
   saveButton: { backgroundColor: colors.primary, paddingVertical: spacing.md, borderRadius: 10, alignItems: 'center', marginTop: spacing.md },
