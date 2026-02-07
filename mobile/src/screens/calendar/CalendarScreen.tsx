@@ -11,7 +11,8 @@ import { Calendar, DateData } from 'react-native-calendars';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSessions } from '../../hooks/useSessions';
-import { colors, spacing, fontSize } from '../../theme';
+import { colors, spacing, fontSize, borderRadius, shadows } from '../../theme';
+import ErrorState from '../../components/ErrorState';
 import type { Session } from '../../types';
 
 type RootStackParamList = {
@@ -59,7 +60,7 @@ function CalendarScreen() {
   const [visibleMonth, setVisibleMonth] = useState<string>(today);
 
   const { from, to } = useMemo(() => getMonthRange(visibleMonth), [visibleMonth]);
-  const { data: sessions, isLoading, error, refetch } = useSessions({ from, to });
+  const { data: sessions, isLoading, isError, error, refetch } = useSessions({ from, to });
 
   const markedDates = useMemo(() => {
     const marks: Record<string, any> = {};
@@ -128,8 +129,8 @@ function CalendarScreen() {
 
       {isLoading ? (
         <View style={styles.centered}><ActivityIndicator size="large" color={colors.primary} /></View>
-      ) : error ? (
-        <View style={styles.centered}><Text style={styles.errorText}>Failed to load sessions</Text></View>
+      ) : isError ? (
+        <ErrorState message="Failed to load sessions" detail={(error as Error)?.message} onRetry={refetch} />
       ) : selectedDaySessions.length === 0 ? (
         <View style={styles.centered}><Text style={styles.emptyText}>No sessions scheduled</Text></View>
       ) : (
@@ -176,18 +177,18 @@ const styles = StyleSheet.create({
   agendaTitle: { fontSize: fontSize.lg, fontWeight: '600', color: colors.text },
   sessionCount: { fontSize: fontSize.sm, color: colors.textSecondary },
   listContent: { paddingHorizontal: spacing.md, paddingTop: spacing.sm, paddingBottom: 100 },
-  sessionRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 10, padding: spacing.md, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border },
+  sessionRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.md, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border },
   sessionTime: { width: 70, marginRight: spacing.sm },
   timeText: { fontSize: fontSize.sm, fontWeight: '600', color: colors.primary },
   sessionInfo: { flex: 1, marginRight: spacing.sm },
   clientName: { fontSize: fontSize.md, fontWeight: '600', color: colors.text, marginBottom: 2 },
   durationText: { fontSize: fontSize.sm, color: colors.textSecondary },
-  statusBadge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: 12 },
+  statusBadge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.xl },
   statusText: { fontSize: 11, fontWeight: '600', color: colors.surface, textTransform: 'capitalize' },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: spacing.xl },
   errorText: { fontSize: fontSize.md, color: colors.danger },
   emptyText: { fontSize: fontSize.md, color: colors.textSecondary },
-  fab: { position: 'absolute', right: spacing.lg, bottom: spacing.lg, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', elevation: 6, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 4 },
+  fab: { position: 'absolute', right: spacing.lg, bottom: spacing.lg, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', ...shadows.lg },
   fabText: { fontSize: 28, fontWeight: '400', color: colors.surface, lineHeight: 30 },
 });
 

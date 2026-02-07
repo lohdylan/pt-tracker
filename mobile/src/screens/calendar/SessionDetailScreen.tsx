@@ -12,7 +12,8 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSession, useUpdateSession, useDeleteSession } from '../../hooks/useSessions';
 import { useWorkoutLogs } from '../../hooks/useWorkoutLogs';
-import { colors, spacing, fontSize } from '../../theme';
+import { colors, spacing, fontSize, borderRadius, shadows } from '../../theme';
+import ErrorState from '../../components/ErrorState';
 import type { WorkoutLog, Session } from '../../types';
 
 type RootStackParamList = {
@@ -56,7 +57,7 @@ function SessionDetailScreen() {
   const route = useRoute<ScreenRouteProp>();
   const { sessionId } = route.params;
 
-  const { data: session, isLoading, error } = useSession(sessionId);
+  const { data: session, isLoading, error, refetch } = useSession(sessionId);
   const { data: workoutLogs, isLoading: logsLoading } = useWorkoutLogs(sessionId);
   const updateSession = useUpdateSession();
   const deleteSession = useDeleteSession();
@@ -124,11 +125,7 @@ function SessionDetailScreen() {
   }
 
   if (error || !session) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>Failed to load session</Text>
-      </View>
-    );
+    return <ErrorState message="Failed to load session" detail={(error as Error)?.message} onRetry={refetch} />;
   }
 
   const currentStatus = session.status || 'scheduled';
@@ -240,12 +237,11 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingBottom: spacing.xl * 2 },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background },
-  errorText: { fontSize: fontSize.md, color: colors.danger },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   clientName: { fontSize: fontSize.xl, fontWeight: '700', color: colors.text, flex: 1, marginRight: spacing.sm },
-  statusBadge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2, borderRadius: 16 },
+  statusBadge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs + 2, borderRadius: borderRadius.pill },
   statusBadgeText: { fontSize: fontSize.sm, fontWeight: '600', color: colors.surface },
-  card: { backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
+  card: { backgroundColor: colors.surface, borderRadius: borderRadius.xl, padding: spacing.md, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
   detailRow: { paddingVertical: spacing.sm },
   detailLabel: { fontSize: fontSize.sm, color: colors.textSecondary, marginBottom: spacing.xs, fontWeight: '500' },
   detailValue: { fontSize: fontSize.md, color: colors.text },
@@ -254,16 +250,16 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: fontSize.lg, fontWeight: '600', color: colors.text, marginBottom: spacing.sm },
   linkText: { fontSize: fontSize.md, color: colors.primary, fontWeight: '600', marginBottom: spacing.sm },
   statusActions: { flexDirection: 'row', gap: spacing.sm },
-  statusButton: { flex: 1, paddingVertical: spacing.sm + 2, borderRadius: 8, alignItems: 'center' },
+  statusButton: { flex: 1, paddingVertical: spacing.sm + 2, borderRadius: borderRadius.md, alignItems: 'center' },
   statusButtonText: { fontSize: fontSize.sm, fontWeight: '600', color: colors.surface },
   exerciseRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
   exerciseName: { fontSize: fontSize.md, fontWeight: '500', color: colors.text, flex: 1 },
   exerciseDetail: { fontSize: fontSize.sm, color: colors.textSecondary },
   emptyText: { fontSize: fontSize.md, color: colors.textSecondary, textAlign: 'center', paddingVertical: spacing.md },
   actions: { gap: spacing.sm, marginTop: spacing.sm },
-  editButton: { backgroundColor: colors.primary, paddingVertical: spacing.md, borderRadius: 10, alignItems: 'center' },
+  editButton: { backgroundColor: colors.primary, paddingVertical: spacing.md, borderRadius: borderRadius.lg, alignItems: 'center' },
   editButtonText: { fontSize: fontSize.md, fontWeight: '600', color: colors.surface },
-  deleteButton: { backgroundColor: colors.surface, paddingVertical: spacing.md, borderRadius: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.danger },
+  deleteButton: { backgroundColor: colors.surface, paddingVertical: spacing.md, borderRadius: borderRadius.lg, alignItems: 'center', borderWidth: 1, borderColor: colors.danger },
   deleteButtonText: { fontSize: fontSize.md, fontWeight: '600', color: colors.danger },
 });
 

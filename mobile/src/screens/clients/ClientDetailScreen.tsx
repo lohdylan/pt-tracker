@@ -13,11 +13,13 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
-import { useClient, useDeleteClient } from '../../hooks/useClients';
+import { useClient, useDeleteClient, useRegenerateAccessCode } from '../../hooks/useClients';
 import { useSessions } from '../../hooks/useSessions';
 import { useMeasurements } from '../../hooks/useMeasurements';
 import { UPLOADS_BASE } from '../../api';
-import { colors, spacing, fontSize } from '../../theme';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, fontSize, borderRadius, shadows } from '../../theme';
+import ErrorState from '../../components/ErrorState';
 import type { Session, Measurement } from '../../types';
 
 type ParamList = {
@@ -26,20 +28,22 @@ type ParamList = {
   SessionDetail: { sessionId: number };
   MeasurementForm: { clientId: number; measurementId?: number };
   ProgressChart: { clientId: number };
+  ProgressPhotos: { clientId: number };
 };
 
 type NavigationProp = NativeStackNavigationProp<ParamList, 'ClientDetail'>;
 type ClientDetailRouteProp = RouteProp<ParamList, 'ClientDetail'>;
 
-type TabName = 'sessions' | 'measurements';
+type TabName = 'sessions' | 'measurements' | 'photos';
 
 function ClientDetailScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<ClientDetailRouteProp>();
   const { clientId } = route.params;
 
-  const { data: client, isLoading, isError } = useClient(clientId);
+  const { data: client, isLoading, isError, error, refetch } = useClient(clientId);
   const deleteClient = useDeleteClient();
+  const regenerateCode = useRegenerateAccessCode();
   const { data: sessions, isLoading: sessionsLoading } = useSessions({ client_id: clientId });
   const { data: measurements, isLoading: measurementsLoading } = useMeasurements(clientId);
 
@@ -85,6 +89,10 @@ function ClientDetailScreen() {
     navigation.navigate('ProgressChart', { clientId });
   }, [navigation, clientId]);
 
+  const handleViewPhotos = useCallback(() => {
+    navigation.navigate('ProgressPhotos', { clientId });
+  }, [navigation, clientId]);
+
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString('en-US', {
@@ -111,11 +119,7 @@ function ClientDetailScreen() {
   }
 
   if (isError || !client) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>Failed to load client.</Text>
-      </View>
-    );
+    return <ErrorState message="Failed to load client" detail={(error as Error)?.message} onRetry={refetch} />;
   }
 
   const renderAvatar = () => {
@@ -147,7 +151,7 @@ function ClientDetailScreen() {
           {item.status ?? 'Scheduled'} {item.duration_min ? `- ${formatDuration(item.duration_min)}` : ''}
         </Text>
       </View>
-      <Text style={styles.chevron}>{'>'}</Text>
+      <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} style={styles.chevron} />
     </TouchableOpacity>
   );
 
@@ -187,6 +191,36 @@ function ClientDetailScreen() {
           {renderInfoRow('Goals', client.goals)}
           {renderInfoRow('Notes', client.notes)}
 
+          {client.access_code && (
+            <View style={styles.accessCodeSection}>
+              <Text style={styles.infoLabel}>Access Code</Text>
+              <View style={styles.accessCodeRow}>
+                <Text style={styles.accessCodeText}>{client.access_code}</Text>
+                <TouchableOpacity
+                  style={styles.regenerateButton}
+                  onPress={() => {
+                    Alert.alert(
+                      'Regenerate Code',
+                      'This will invalidate the current code. Continue?',
+                      [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                          text: 'Regenerate',
+                          onPress: () => regenerateCode.mutate(clientId),
+                        },
+                      ]
+                    );
+                  }}
+                >
+                  <Text style={styles.regenerateButtonText}>Regenerate</Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.accessCodeHint}>
+                Share this code with the client so they can log in.
+              </Text>
+            </View>
+          )}
+
           <View style={styles.actionRow}>
             <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
               <Text style={styles.editButtonText}>Edit</Text>
@@ -223,6 +257,19 @@ function ClientDetailScreen() {
               ]}
             >
               Measurements
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'photos' && styles.tabActive]}
+            onPress={() => setActiveTab('photos')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === 'photos' && styles.tabTextActive,
+              ]}
+            >
+              Photos
             </Text>
           </TouchableOpacity>
         </View>
@@ -274,6 +321,13 @@ function ClientDetailScreen() {
             )}
           </View>
         )}
+        {activeTab === 'photos' && (
+          <View style={styles.tabContent}>
+            <TouchableOpacity style={styles.chartButton} onPress={handleViewPhotos}>
+              <Text style={styles.chartButtonText}>View All Photos</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
 
       {activeTab === 'measurements' && (
@@ -304,10 +358,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
-  },
-  errorText: {
-    fontSize: fontSize.md,
-    color: colors.danger,
   },
   profileCard: {
     backgroundColor: colors.surface,
@@ -365,7 +415,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
   },
   editButtonText: {
     color: colors.surface,
@@ -376,7 +426,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.danger,
   },
@@ -445,8 +495,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   chevron: {
-    fontSize: fontSize.lg,
-    color: colors.textSecondary,
     marginLeft: spacing.sm,
   },
   chartButton: {
@@ -454,13 +502,49 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.md,
     marginBottom: spacing.sm,
     paddingVertical: spacing.sm + 2,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
   },
   chartButtonText: {
     color: colors.surface,
     fontSize: fontSize.md,
     fontWeight: '600',
+  },
+  accessCodeSection: {
+    width: '100%',
+    paddingVertical: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  accessCodeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  accessCodeText: {
+    fontSize: fontSize.xl,
+    fontWeight: '700',
+    color: colors.text,
+    fontFamily: 'Courier',
+    letterSpacing: 4,
+  },
+  regenerateButton: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: borderRadius.sm,
+  },
+  regenerateButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  accessCodeHint: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+    fontStyle: 'italic',
   },
   fab: {
     position: 'absolute',
@@ -472,11 +556,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 8,
+    ...shadows.lg,
   },
   fabText: {
     color: colors.surface,

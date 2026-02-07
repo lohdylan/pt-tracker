@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useClients } from '../../hooks/useClients';
 import { UPLOADS_BASE } from '../../api';
-import { colors, spacing, fontSize } from '../../theme';
+import { colors, spacing, fontSize, borderRadius, shadows } from '../../theme';
 import type { Client } from '../../types';
 
 type NavigationProp = NativeStackNavigationProp<{
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     backgroundColor: colors.primary,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
   },
   retryButtonText: {
     color: colors.surface,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     backgroundColor: colors.background,
-    borderRadius: 10,
+    borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
     fontSize: fontSize.md,
@@ -259,13 +259,13 @@ const styles = StyleSheet.create({
   statusChip: {
     paddingHorizontal: spacing.sm + 2,
     paddingVertical: spacing.xs,
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
   },
   statusActive: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: colors.successLight,
   },
   statusInactive: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.backgroundAlt,
   },
   statusText: {
     fontSize: fontSize.sm,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderRadius: 10,
+    borderRadius: borderRadius.lg,
   },
   addButtonText: {
     color: colors.surface,
@@ -316,11 +316,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 8,
+    ...shadows.lg,
   },
   fabText: {
     color: colors.surface,

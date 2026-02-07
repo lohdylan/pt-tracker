@@ -12,7 +12,7 @@ import {
 import { BarChart } from "react-native-chart-kit";
 import { useNavigation } from "@react-navigation/native";
 import { useDashboard } from "../../hooks/useDashboard";
-import { colors, spacing, fontSize } from "../../theme";
+import { colors, spacing, fontSize, borderRadius, shadows } from "../../theme";
 import type { DashboardTodaySession, DashboardRecentActivity } from "../../types";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -201,26 +201,22 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: "center", alignItems: "center", padding: spacing.lg },
   errorText: { fontSize: fontSize.lg, fontWeight: "600", color: colors.danger, marginBottom: spacing.xs },
   errorDetail: { fontSize: fontSize.sm, color: colors.textSecondary, marginBottom: spacing.md },
-  retryBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: 8 },
+  retryBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: borderRadius.md },
   retryText: { color: "#fff", fontWeight: "600" },
   statsGrid: { flexDirection: "row", flexWrap: "wrap", padding: spacing.md, gap: spacing.sm },
   statCard: {
     flex: 1,
     minWidth: "45%",
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     padding: spacing.md,
     borderLeftWidth: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    ...shadows.sm,
   },
   statValue: { fontSize: fontSize.xxl, fontWeight: "700", color: colors.text },
   statLabel: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 2 },
   quickActions: { flexDirection: "row", paddingHorizontal: spacing.md, gap: spacing.sm, marginBottom: spacing.sm },
-  quickBtn: { flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: "center" },
+  quickBtn: { flex: 1, paddingVertical: 12, borderRadius: borderRadius.lg, alignItems: "center" },
   quickBtnText: { color: "#fff", fontWeight: "600", fontSize: fontSize.md },
   section: { paddingHorizontal: spacing.md, marginTop: spacing.md },
   sectionTitle: { fontSize: fontSize.lg, fontWeight: "700", color: colors.text, marginBottom: spacing.sm },
@@ -230,19 +226,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.surface,
     padding: spacing.md,
-    borderRadius: 10,
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.xs,
-    shadowColor: "#000",
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
+    ...shadows.sm,
   },
   sessionClient: { fontSize: fontSize.md, fontWeight: "600", color: colors.text },
   sessionTime: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 2 },
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: borderRadius.xl },
   statusText: { color: "#fff", fontSize: 11, fontWeight: "600", textTransform: "capitalize" },
-  chart: { borderRadius: 12, alignSelf: "center" },
+  chart: { borderRadius: borderRadius.xl, alignSelf: "center" },
   activityRow: { flexDirection: "row", alignItems: "flex-start", paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
   activityIcon: { fontSize: 16, marginRight: spacing.sm, marginTop: 2, fontWeight: "700" },
   activityDesc: { fontSize: fontSize.md, color: colors.text },
