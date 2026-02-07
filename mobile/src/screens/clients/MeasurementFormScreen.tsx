@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
@@ -16,6 +15,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
 import { useCreateMeasurement } from '../../hooks/useMeasurements';
 import { colors, spacing, fontSize } from '../../theme';
+import FormField from '../../components/FormField';
 
 type ParamList = {
   MeasurementForm: { clientId: number; measurementId?: number };
@@ -55,6 +55,26 @@ function MeasurementFormScreen() {
 
   const [form, setForm] = useState<FormState>(initialForm);
   const [saving, setSaving] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const numericFields: (keyof FormState)[] = ['weight_lbs', 'body_fat_pct', 'chest_in', 'waist_in', 'hips_in', 'arm_in', 'thigh_in'];
+
+  const validate = useCallback((): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (!form.recorded_at.trim()) errs.recorded_at = 'Date is required';
+    for (const field of numericFields) {
+      const val = form[field].trim();
+      if (val && isNaN(parseFloat(val))) {
+        errs[field] = 'Must be a valid number';
+      }
+    }
+    return errs;
+  }, [form]);
+
+  const errors = validate();
+  const showError = (field: string) => (touched[field] || submitted) ? errors[field] : undefined;
+  const handleBlur = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
 
   const updateField = useCallback(
     (field: keyof FormState, value: string) => {
@@ -70,10 +90,9 @@ function MeasurementFormScreen() {
   };
 
   const handleSave = useCallback(async () => {
-    if (!form.recorded_at.trim()) {
-      Alert.alert('Validation Error', 'Date is required.');
-      return;
-    }
+    setSubmitted(true);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) return;
 
     setSaving(true);
 
@@ -96,25 +115,23 @@ function MeasurementFormScreen() {
     } finally {
       setSaving(false);
     }
-  }, [form, createMeasurement, navigation]);
+  }, [form, createMeasurement, navigation, validate]);
 
   const renderNumericField = (
     label: string,
     field: keyof FormState,
     placeholder: string,
   ) => (
-    <View style={styles.fieldGroup}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        style={styles.input}
-        value={form[field]}
-        onChangeText={(v) => updateField(field, v)}
-        placeholder={placeholder}
-        placeholderTextColor={colors.disabled}
-        keyboardType="decimal-pad"
-        returnKeyType="done"
-      />
-    </View>
+    <FormField
+      label={label}
+      value={form[field]}
+      onChangeText={(v) => updateField(field, v)}
+      onBlur={() => handleBlur(field)}
+      error={showError(field)}
+      placeholder={placeholder}
+      keyboardType="decimal-pad"
+      returnKeyType="done"
+    />
   );
 
   return (
@@ -129,17 +146,16 @@ function MeasurementFormScreen() {
         <Text style={styles.heading}>Log Measurement</Text>
 
         {/* Date Field */}
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Date</Text>
-          <TextInput
-            style={styles.input}
-            value={form.recorded_at}
-            onChangeText={(v) => updateField('recorded_at', v)}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={colors.disabled}
-            autoCapitalize="none"
-          />
-        </View>
+        <FormField
+          label="Date"
+          required
+          value={form.recorded_at}
+          onChangeText={(v) => updateField('recorded_at', v)}
+          onBlur={() => handleBlur('recorded_at')}
+          error={showError('recorded_at')}
+          placeholder="YYYY-MM-DD"
+          autoCapitalize="none"
+        />
 
         <View style={styles.separator} />
         <Text style={styles.sectionTitle}>Body Weight</Text>
@@ -199,25 +215,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.border,
     marginVertical: spacing.md,
-  },
-  fieldGroup: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    fontSize: fontSize.md,
-    color: colors.text,
   },
   saveButton: {
     backgroundColor: colors.primary,

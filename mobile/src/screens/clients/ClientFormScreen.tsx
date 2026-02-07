@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
@@ -25,6 +24,7 @@ import {
 } from '../../hooks/useClients';
 import { UPLOADS_BASE } from '../../api';
 import { colors, spacing, fontSize } from '../../theme';
+import FormField from '../../components/FormField';
 
 type ParamList = {
   ClientForm: { clientId?: number };
@@ -69,6 +69,22 @@ function ClientFormScreen() {
   const [form, setForm] = useState<FormState>(initialForm);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const validate = useCallback((): Record<string, string> => {
+    const errors: Record<string, string> = {};
+    if (!form.first_name.trim()) errors.first_name = 'First name is required';
+    if (!form.last_name.trim()) errors.last_name = 'Last name is required';
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      errors.email = 'Invalid email format';
+    }
+    return errors;
+  }, [form.first_name, form.last_name, form.email]);
+
+  const errors = validate();
+  const showError = (field: string) => (touched[field] || submitted) ? errors[field] : undefined;
+  const handleBlur = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
 
   useEffect(() => {
     if (isEditing && existingClient) {
@@ -115,14 +131,9 @@ function ClientFormScreen() {
   }, []);
 
   const handleSave = useCallback(async () => {
-    if (!form.first_name.trim()) {
-      Alert.alert('Validation Error', 'First name is required.');
-      return;
-    }
-    if (!form.last_name.trim()) {
-      Alert.alert('Validation Error', 'Last name is required.');
-      return;
-    }
+    setSubmitted(true);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) return;
 
     setSaving(true);
 
@@ -165,6 +176,7 @@ function ClientFormScreen() {
     updateClient,
     uploadPhoto,
     navigation,
+    validate,
   ]);
 
   if (isEditing && clientLoading) {
@@ -207,83 +219,69 @@ function ClientFormScreen() {
         </View>
 
         {/* Form Fields */}
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>First Name *</Text>
-          <TextInput
-            style={styles.input}
-            value={form.first_name}
-            onChangeText={(v) => updateField('first_name', v)}
-            placeholder="First name"
-            placeholderTextColor={colors.disabled}
-            autoCapitalize="words"
-          />
-        </View>
+        <FormField
+          label="First Name"
+          required
+          value={form.first_name}
+          onChangeText={(v) => updateField('first_name', v)}
+          onBlur={() => handleBlur('first_name')}
+          error={showError('first_name')}
+          placeholder="First name"
+          autoCapitalize="words"
+        />
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Last Name *</Text>
-          <TextInput
-            style={styles.input}
-            value={form.last_name}
-            onChangeText={(v) => updateField('last_name', v)}
-            placeholder="Last name"
-            placeholderTextColor={colors.disabled}
-            autoCapitalize="words"
-          />
-        </View>
+        <FormField
+          label="Last Name"
+          required
+          value={form.last_name}
+          onChangeText={(v) => updateField('last_name', v)}
+          onBlur={() => handleBlur('last_name')}
+          error={showError('last_name')}
+          placeholder="Last name"
+          autoCapitalize="words"
+        />
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={form.email}
-            onChangeText={(v) => updateField('email', v)}
-            placeholder="email@example.com"
-            placeholderTextColor={colors.disabled}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-        </View>
+        <FormField
+          label="Email"
+          value={form.email}
+          onChangeText={(v) => updateField('email', v)}
+          onBlur={() => handleBlur('email')}
+          error={showError('email')}
+          placeholder="email@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Phone</Text>
-          <TextInput
-            style={styles.input}
-            value={form.phone}
-            onChangeText={(v) => updateField('phone', v)}
-            placeholder="(555) 123-4567"
-            placeholderTextColor={colors.disabled}
-            keyboardType="phone-pad"
-          />
-        </View>
+        <FormField
+          label="Phone"
+          value={form.phone}
+          onChangeText={(v) => updateField('phone', v)}
+          placeholder="(555) 123-4567"
+          keyboardType="phone-pad"
+        />
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Goals</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            value={form.goals}
-            onChangeText={(v) => updateField('goals', v)}
-            placeholder="Client goals..."
-            placeholderTextColor={colors.disabled}
-            multiline
-            numberOfLines={3}
-            textAlignVertical="top"
-          />
-        </View>
+        <FormField
+          label="Goals"
+          value={form.goals}
+          onChangeText={(v) => updateField('goals', v)}
+          placeholder="Client goals..."
+          multiline
+          numberOfLines={3}
+          style={styles.multilineInput}
+          textAlignVertical="top"
+        />
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Notes</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            value={form.notes}
-            onChangeText={(v) => updateField('notes', v)}
-            placeholder="Additional notes..."
-            placeholderTextColor={colors.disabled}
-            multiline
-            numberOfLines={3}
-            textAlignVertical="top"
-          />
-        </View>
+        <FormField
+          label="Notes"
+          value={form.notes}
+          onChangeText={(v) => updateField('notes', v)}
+          placeholder="Additional notes..."
+          multiline
+          numberOfLines={3}
+          style={styles.multilineInput}
+          textAlignVertical="top"
+        />
 
         {isEditing && (
           <View style={styles.switchRow}>
@@ -369,23 +367,9 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '600',
   },
-  fieldGroup: {
-    marginBottom: spacing.md,
-  },
   label: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    fontSize: fontSize.md,
     color: colors.text,
   },
   multilineInput: {
