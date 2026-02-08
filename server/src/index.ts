@@ -16,6 +16,7 @@ import notificationsRouter from "./routes/notifications.js";
 import messagesRouter from "./routes/messages.js";
 import { startScheduler } from "./services/scheduler.js";
 import * as Sentry from "@sentry/node";
+import { isS3Enabled, getSignedFileUrl } from "./lib/storage.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -28,6 +29,21 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 // Public routes
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// File proxy -- serves uploaded files via S3 presigned URL redirect
+app.get("/api/files/*key", requireAuth, async (req, res) => {
+  if (!isS3Enabled()) {
+    return res.status(404).json({ error: "S3 not configured" });
+  }
+  try {
+    const key = (req.params as Record<string, string>).key;
+    const url = await getSignedFileUrl(key);
+    res.redirect(url);
+  } catch (err) {
+    console.error("File proxy error:", err);
+    res.status(500).json({ error: "Failed to generate file URL" });
+  }
 });
 
 app.use("/api/auth", authRouter);
