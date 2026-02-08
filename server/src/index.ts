@@ -78,5 +78,6 @@ app.use(
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`DATABASE_URL set: ${!!process.env.DATABASE_URL} (host: ${process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'NOT SET'})`);
   startScheduler();
 });
