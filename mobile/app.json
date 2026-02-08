@@ -38,6 +38,9 @@
           "icon": "./assets/icon.png"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "apiUrl": ""
+    }
   }
 }
