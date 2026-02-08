@@ -1,12 +1,13 @@
 import { Router } from "express";
 import pool from "../db.js";
+import { requireTrainer, requireOwnClient } from "../middleware/auth.js";
 
 const router = Router({ mergeParams: true });
 
 type P = { clientId: string; id?: string };
 
-// GET /api/clients/:clientId/measurements
-router.get("/", async (req, res) => {
+// GET /api/clients/:clientId/measurements — client can GET own
+router.get("/", requireOwnClient("clientId"), async (req, res) => {
   const { clientId } = req.params as unknown as P;
   const { rows } = await pool.query(
     "SELECT * FROM measurements WHERE client_id = $1 ORDER BY recorded_at DESC",
@@ -16,7 +17,7 @@ router.get("/", async (req, res) => {
 });
 
 // POST /api/clients/:clientId/measurements
-router.post("/", async (req, res) => {
+router.post("/", requireTrainer, async (req, res) => {
   const { clientId } = req.params as unknown as P;
   const {
     recorded_at,
@@ -44,11 +45,18 @@ router.post("/", async (req, res) => {
       thigh_in,
     ]
   );
+
+  // Send push notification to client
+  try {
+    const { notifyClient } = await import("../services/pushService.js");
+    await notifyClient(Number(clientId), "New Measurement", "Your trainer recorded new measurements for you", { type: "measurement_recorded" });
+  } catch { /* non-fatal */ }
+
   res.status(201).json(rows[0]);
 });
 
 // PUT /api/clients/:clientId/measurements/:id
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireTrainer, async (req, res) => {
   const { clientId, id } = req.params as unknown as P;
   const {
     recorded_at,
@@ -82,7 +90,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE /api/clients/:clientId/measurements/:id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireTrainer, async (req, res) => {
   const { clientId, id } = req.params as unknown as P;
   const { rowCount } = await pool.query(
     "DELETE FROM measurements WHERE id = $1 AND client_id = $2",

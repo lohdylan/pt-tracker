@@ -1,10 +1,11 @@
 import { Router } from "express";
 import pool from "../db.js";
+import { requireTrainer } from "../middleware/auth.js";
 
 const router = Router();
 
-// GET /api/templates
-router.get("/", async (_req, res) => {
+// GET /api/templates — trainer only
+router.get("/", requireTrainer, async (_req, res) => {
   const { rows } = await pool.query(
     "SELECT * FROM workout_templates ORDER BY name"
   );
@@ -12,7 +13,7 @@ router.get("/", async (_req, res) => {
 });
 
 // POST /api/templates
-router.post("/", async (req, res) => {
+router.post("/", requireTrainer, async (req, res) => {
   const { name, exercises } = req.body;
   const { rows } = await pool.query(
     `INSERT INTO workout_templates (name, exercises) VALUES ($1,$2) RETURNING *`,
@@ -22,7 +23,7 @@ router.post("/", async (req, res) => {
 });
 
 // GET /api/templates/:id
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireTrainer, async (req, res) => {
   const { rows } = await pool.query(
     "SELECT * FROM workout_templates WHERE id = $1",
     [req.params.id]
@@ -32,7 +33,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // PUT /api/templates/:id
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireTrainer, async (req, res) => {
   const { name, exercises } = req.body;
   const { rows } = await pool.query(
     `UPDATE workout_templates SET name=$1, exercises=$2, updated_at=NOW()
@@ -44,7 +45,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE /api/templates/:id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireTrainer, async (req, res) => {
   const { rowCount } = await pool.query(
     "DELETE FROM workout_templates WHERE id = $1",
     [req.params.id]

@@ -1,10 +1,11 @@
 import { Router } from "express";
 import pool from "../db.js";
+import { requireTrainer } from "../middleware/auth.js";
 
 const router = Router();
 
-// GET /api/analytics/dashboard
-router.get("/dashboard", async (_req, res) => {
+// GET /api/analytics/dashboard — trainer only
+router.get("/dashboard", requireTrainer, async (_req, res) => {
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
@@ -24,10 +25,8 @@ router.get("/dashboard", async (_req, res) => {
     weeklyTrendRes,
     recentActivityRes,
   ] = await Promise.all([
-    // 1. Active clients count
     pool.query("SELECT COUNT(*)::int AS count FROM clients WHERE is_active = true"),
 
-    // 2. Today's sessions with client info
     pool.query(
       `SELECT s.id, s.client_id, c.first_name, c.last_name, s.scheduled_at, s.duration_min, s.status
        FROM sessions s JOIN clients c ON s.client_id = c.id
@@ -36,13 +35,11 @@ router.get("/dashboard", async (_req, res) => {
       [todayStart, todayEnd]
     ),
 
-    // 3. This week's session count
     pool.query(
       "SELECT COUNT(*)::int AS count FROM sessions WHERE scheduled_at >= $1 AND scheduled_at < $2",
       [weekStart.toISOString(), weekEnd.toISOString()]
     ),
 
-    // 4. Completion rate (completed / (completed + no_show + cancelled)) over last 30 days
     pool.query(
       `SELECT
          CASE WHEN COUNT(*) FILTER (WHERE status IN ('completed','cancelled','no_show')) = 0 THEN 0
@@ -54,7 +51,6 @@ router.get("/dashboard", async (_req, res) => {
        WHERE scheduled_at >= NOW() - INTERVAL '30 days'`
     ),
 
-    // 5. Weekly trend (Mon-Sun session counts)
     pool.query(
       `SELECT d.day::date::text AS day,
               COALESCE(COUNT(s.id), 0)::int AS count
@@ -64,7 +60,6 @@ router.get("/dashboard", async (_req, res) => {
       [weekStart.toISOString(), weekEnd.toISOString()]
     ),
 
-    // 6. Recent activity (last 10 events)
     pool.query(
       `(SELECT 'session_completed' AS type,
               'Completed session with ' || c.first_name || ' ' || c.last_name AS description,

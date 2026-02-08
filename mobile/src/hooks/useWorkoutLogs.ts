@@ -18,6 +18,24 @@ export function useCreateWorkoutLog(sessionId: number) {
   });
 }
 
+export function useBatchCreateWorkoutLogs(sessionId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (logs: Array<Partial<WorkoutLog>>) =>
+      api.post<WorkoutLog[]>(`/sessions/${sessionId}/logs/batch`, { logs }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["workoutLogs", sessionId] }),
+  });
+}
+
+export function useReorderWorkoutLogs(sessionId: number) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (order: Array<{ id: number; sort_order: number }>) =>
+      api.put<WorkoutLog[]>(`/sessions/${sessionId}/logs/reorder`, { order }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["workoutLogs", sessionId] }),
+  });
+}
+
 export function useUpdateWorkoutLog(sessionId: number) {
   const qc = useQueryClient();
   return useMutation({

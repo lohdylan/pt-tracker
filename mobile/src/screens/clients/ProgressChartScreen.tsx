@@ -11,8 +11,8 @@ import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { LineChart } from 'react-native-chart-kit';
 import { useMeasurements } from '../../hooks/useMeasurements';
+import { buildChartData, buildMultiLineChartData } from '../../utils/chartHelpers';
 import { colors, spacing, fontSize } from '../../theme';
-import type { Measurement } from '../../types';
 
 type ParamList = {
   ProgressChart: { clientId: number };
@@ -47,89 +47,6 @@ const bodyChartConfig = {
     stroke: colors.success,
   },
 };
-
-function formatShortDate(dateStr: string): string {
-  const d = new Date(dateStr);
-  const month = d.getMonth() + 1;
-  const day = d.getDate();
-  return `${month}/${day}`;
-}
-
-interface ChartData {
-  labels: string[];
-  datasets: { data: number[] }[];
-}
-
-function buildChartData(
-  measurements: Measurement[],
-  field: keyof Measurement,
-): ChartData | null {
-  const filtered = measurements
-    .filter((m) => m[field] != null && typeof m[field] === 'number')
-    .sort(
-      (a, b) =>
-        new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime(),
-    );
-
-  if (filtered.length === 0) return null;
-
-  // Limit labels to avoid overcrowding
-  const maxLabels = 8;
-  const step = Math.max(1, Math.floor(filtered.length / maxLabels));
-
-  const labels = filtered.map((m, i) =>
-    i % step === 0 || i === filtered.length - 1
-      ? formatShortDate(m.recorded_at)
-      : '',
-  );
-
-  const data = filtered.map((m) => Number(m[field]));
-
-  return {
-    labels,
-    datasets: [{ data }],
-  };
-}
-
-function buildMultiLineChartData(
-  measurements: Measurement[],
-  fields: { key: keyof Measurement; label: string; color: string }[],
-): { data: ChartData; legend: string[] } | null {
-  const sorted = [...measurements].sort(
-    (a, b) =>
-      new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime(),
-  );
-
-  // Only include fields that have at least one data point
-  const validFields = fields.filter((f) =>
-    sorted.some((m) => m[f.key] != null && typeof m[f.key] === 'number'),
-  );
-
-  if (validFields.length === 0 || sorted.length === 0) return null;
-
-  const maxLabels = 8;
-  const step = Math.max(1, Math.floor(sorted.length / maxLabels));
-
-  const labels = sorted.map((m, i) =>
-    i % step === 0 || i === sorted.length - 1
-      ? formatShortDate(m.recorded_at)
-      : '',
-  );
-
-  const datasets = validFields.map((f) => ({
-    data: sorted.map((m) => {
-      const val = m[f.key];
-      return typeof val === 'number' ? val : 0;
-    }),
-    color: (opacity = 1) => f.color.replace('1)', `${opacity})`),
-    strokeWidth: 2,
-  }));
-
-  return {
-    data: { labels, datasets },
-    legend: validFields.map((f) => f.label),
-  };
-}
 
 function ProgressChartScreen() {
   const route = useRoute<ProgressChartRouteProp>();
@@ -193,7 +110,6 @@ function ProgressChartScreen() {
     >
       <Text style={styles.heading}>Progress Charts</Text>
 
-      {/* Weight Chart */}
       {weightData ? (
         <View style={styles.chartCard}>
           <Text style={styles.chartTitle}>Weight (lbs)</Text>
@@ -215,7 +131,6 @@ function ProgressChartScreen() {
         </View>
       )}
 
-      {/* Body Fat Chart */}
       {bodyFatData ? (
         <View style={styles.chartCard}>
           <Text style={styles.chartTitle}>Body Fat (%)</Text>
@@ -240,7 +155,6 @@ function ProgressChartScreen() {
         </View>
       ) : null}
 
-      {/* Body Measurements Chart */}
       {bodyMeasurementsData ? (
         <View style={styles.chartCard}>
           <Text style={styles.chartTitle}>Body Measurements (in)</Text>
@@ -283,43 +197,13 @@ function ProgressChartScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    padding: spacing.md,
-    paddingBottom: spacing.xl * 2,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    padding: spacing.xl,
-  },
-  errorText: {
-    fontSize: fontSize.md,
-    color: colors.danger,
-  },
-  emptyTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  emptySubtitle: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  heading: {
-    fontSize: fontSize.xxl,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.lg,
-  },
+  container: { flex: 1, backgroundColor: colors.background },
+  scrollContent: { padding: spacing.md, paddingBottom: spacing.xl * 2 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background, padding: spacing.xl },
+  errorText: { fontSize: fontSize.md, color: colors.danger },
+  emptyTitle: { fontSize: fontSize.xl, fontWeight: '700', color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
+  emptySubtitle: { fontSize: fontSize.md, color: colors.textSecondary, textAlign: 'center' },
+  heading: { fontSize: fontSize.xxl, fontWeight: '700', color: colors.text, marginBottom: spacing.lg },
   chartCard: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -331,41 +215,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  chartTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  chart: {
-    borderRadius: 8,
-  },
-  noDataText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    paddingVertical: spacing.xl,
-  },
-  legendContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: spacing.md,
-    gap: spacing.md,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: spacing.xs,
-  },
-  legendLabel: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
+  chartTitle: { fontSize: fontSize.lg, fontWeight: '700', color: colors.text, marginBottom: spacing.md },
+  chart: { borderRadius: 8 },
+  noDataText: { fontSize: fontSize.md, color: colors.textSecondary, textAlign: 'center', paddingVertical: spacing.xl },
+  legendContainer: { flexDirection: 'row', flexWrap: 'wrap', marginTop: spacing.md, gap: spacing.md },
+  legendItem: { flexDirection: 'row', alignItems: 'center' },
+  legendDot: { width: 10, height: 10, borderRadius: 5, marginRight: spacing.xs },
+  legendLabel: { fontSize: fontSize.sm, color: colors.textSecondary },
 });
 
 export default ProgressChartScreen;

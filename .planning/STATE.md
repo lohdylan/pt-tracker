@@ -71,10 +71,10 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 03-02-PLAN.md (S3 storage migration, mobile production URL)
-Resume file: None
+Stopped at: 03-03 Task 1 checkpoint (user setting Railway env vars, Step 3 of 6)
+Resume file: .planning/phases/03-production-infrastructure/03-03-HANDOFF.md
 
 **Phase 3 Progress:**
 Plan 01 complete -- server compiles to dist/, Sentry instrumented, SSL-aware DB, production start script works.
 Plan 02 complete -- S3 storage lib, 3 upload routes migrated, /api/files proxy endpoint, mobile Expo config for production API URL.
-Next: 03-03 (Railway deployment, environment setup, end-to-end verification).
+Plan 03 in progress -- Sentry DSN obtained, Railway project being configured. User on Step 3 (env vars).

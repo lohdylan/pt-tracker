@@ -55,3 +55,14 @@ export function useUploadPhoto() {
     },
   });
 }
+
+export function useRegenerateAccessCode() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api.post<Client>(`/clients/${id}/regenerate-code`, {}),
+    onSuccess: (_, id) => {
+      qc.invalidateQueries({ queryKey: ["clients"] });
+      qc.invalidateQueries({ queryKey: ["clients", id] });
+    },
+  });
+}
