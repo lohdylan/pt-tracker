@@ -4,6 +4,10 @@ async function seed() {
   console.log("Seeding database...");
 
   // Clear existing data (reverse FK order)
+  await pool.query("DELETE FROM messages");
+  await pool.query("DELETE FROM progress_photos");
+  await pool.query("DELETE FROM notification_preferences");
+  await pool.query("DELETE FROM push_tokens");
   await pool.query("DELETE FROM workout_logs");
   await pool.query("DELETE FROM measurements");
   await pool.query("DELETE FROM sessions");

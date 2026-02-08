@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 
 // Use LAN IP so physical devices can reach the server
-const DEV_HOST = "192.168.1.68";
+const DEV_HOST = "10.0.0.160";
 const DEV_URL =
   Platform.OS === "android" ? "http://10.0.2.2:3000" : `http://${DEV_HOST}:3000`;
 
