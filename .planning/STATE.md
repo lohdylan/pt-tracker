@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 3 of 5 (Production Infrastructure)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-08 -- Completed 03-01 (production build, Sentry, SSL)
+Last activity: 2026-02-08 -- Completed 03-02 (S3 storage migration, mobile production URL)
 
-Progress: [███████████████████████████████████████████████████████] 56% (10/18 plans)
+Progress: [█████████████████████████████████████████████████████████████] 61% (11/18 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~3.0 min
-- Total execution time: ~31 min
+- Total plans completed: 11
+- Average duration: ~3.5 min
+- Total execution time: ~38 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [███████████████████████
 |-------|-------|-------|----------|
 | 1 | 4/4 | ~16 min | ~4 min |
 | 2 | 5/5 | ~12 min | ~2.4 min |
-| 3 | 1/3 | ~3 min | ~3 min |
+| 3 | 2/3 | ~10 min | ~5 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (~6m), 02-03 (~2m), 02-04 (~2m), 02-05 (~2m), 03-01 (~3m)
-- Trend: stable, efficient execution
+- Last 5 plans: 02-03 (~2m), 02-04 (~2m), 02-05 (~2m), 03-01 (~3m), 03-02 (~7m)
+- Trend: slight increase due to infrastructure complexity
 
 *Updated after each plan completion*
 
@@ -56,6 +56,7 @@ Recent decisions affecting current work:
 - 02-04: Kept Alert.alert for non-validation (photo permission, save errors); client picker uses custom error styling to match FormField; touched on picker close matches onBlur pattern
 - 02-05: Used FlatList with pagingEnabled for onboarding (no external library); onboarding gate applies only to client role; AsyncStorage flag pt_onboarding_complete persists completion
 - 03-01: Added type:module to server/package.json for Node ESM; start script references .js not .mjs; Sentry via --import flag; SSL conditional on NODE_ENV=production
+- 03-02: Express 5 wildcard route uses *key syntax (not :key(*)); UPLOADS_BASE uses /api/files/ prefix in production; S3 keys use folder prefixes (clients/, videos/, progress/)
 
 ### Pending Todos
 
@@ -65,13 +66,15 @@ None yet.
 
 - No Apple Developer account yet ($99/year required) -- needed by Phase 4
 - No test suite exists -- all verification is manual testing on device
+- Railway deployment (03-03) needs S3 bucket env vars: BUCKET_ENDPOINT, BUCKET_REGION, BUCKET_ACCESS_KEY_ID, BUCKET_SECRET_ACCESS_KEY, BUCKET_NAME
 
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 03-01-PLAN.md (production build, Sentry, SSL)
+Stopped at: Completed 03-02-PLAN.md (S3 storage migration, mobile production URL)
 Resume file: None
 
 **Phase 3 Progress:**
 Plan 01 complete -- server compiles to dist/, Sentry instrumented, SSL-aware DB, production start script works.
-Next: 03-02 (Railway deployment) and 03-03 (environment/secrets).
+Plan 02 complete -- S3 storage lib, 3 upload routes migrated, /api/files proxy endpoint, mobile Expo config for production API URL.
+Next: 03-03 (Railway deployment, environment setup, end-to-end verification).
