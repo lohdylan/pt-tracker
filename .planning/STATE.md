@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-07)
 
 **Core value:** Clients can open the app, see their workout info and exercise videos, and stay connected with their trainer -- all in one place.
-**Current focus:** Phase 2 in progress -- UI polish and UX hardening
+**Current focus:** Phase 3 in progress -- Production infrastructure
 
 ## Current Position
 
-Phase: 2 of 5 (UI Polish & UX Hardening) — COMPLETE
-Plan: 5 of 5 in current phase
-Status: Phase complete
-Last activity: 2026-02-07 -- Completed 02-05 (client onboarding)
+Phase: 3 of 5 (Production Infrastructure)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-08 -- Completed 03-01 (production build, Sentry, SSL)
 
-Progress: [█████████████████████████████████████████████] 50% (9/18 plans)
+Progress: [███████████████████████████████████████████████████████] 56% (10/18 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: ~3.1 min
-- Total execution time: ~28 min
+- Total plans completed: 10
+- Average duration: ~3.0 min
+- Total execution time: ~31 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [███████████████████████
 |-------|-------|-------|----------|
 | 1 | 4/4 | ~16 min | ~4 min |
 | 2 | 5/5 | ~12 min | ~2.4 min |
+| 3 | 1/3 | ~3 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (~2m), 02-02 (~6m), 02-03 (~2m), 02-04 (~2m), 02-05 (~2m)
+- Last 5 plans: 02-02 (~6m), 02-03 (~2m), 02-04 (~2m), 02-05 (~2m), 03-01 (~3m)
 - Trend: stable, efficient execution
 
 *Updated after each plan completion*
@@ -54,6 +55,7 @@ Recent decisions affecting current work:
 - 02-03: NetworkBanner in both login/auth branches; QueryClient retry max 2 for queries, 0 for mutations; Fragment wrappers to avoid extra layout nodes
 - 02-04: Kept Alert.alert for non-validation (photo permission, save errors); client picker uses custom error styling to match FormField; touched on picker close matches onBlur pattern
 - 02-05: Used FlatList with pagingEnabled for onboarding (no external library); onboarding gate applies only to client role; AsyncStorage flag pt_onboarding_complete persists completion
+- 03-01: Added type:module to server/package.json for Node ESM; start script references .js not .mjs; Sentry via --import flag; SSL conditional on NODE_ENV=production
 
 ### Pending Todos
 
@@ -66,14 +68,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-07
-Stopped at: Completed Phase 2 (all 5 plans done)
+Last session: 2026-02-08
+Stopped at: Completed 03-01-PLAN.md (production build, Sentry, SSL)
 Resume file: None
 
-**Phase 2 Completion:**
-All UI polish and UX hardening objectives met:
-1. ✓ Consistent color palette, font sizes, spacing across all screens
-2. ✓ Loading states, empty states, error retry on all data-fetching screens
-3. ✓ Network awareness with offline banner and query retry configuration
-4. ✓ Inline form validation on all 4 form screens
-5. ✓ 4-page client onboarding flow for first-time users
+**Phase 3 Progress:**
+Plan 01 complete -- server compiles to dist/, Sentry instrumented, SSL-aware DB, production start script works.
+Next: 03-02 (Railway deployment) and 03-03 (environment/secrets).
