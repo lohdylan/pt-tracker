@@ -9,30 +9,30 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 
 ## Current Position
 
-Phase: 2 of 5 (UI Polish & UX Hardening)
-Plan: 4 of 5 in current phase
-Status: In progress
-Last activity: 2026-02-07 -- Completed 02-04-PLAN.md
+Phase: 2 of 5 (UI Polish & UX Hardening) — COMPLETE
+Plan: 5 of 5 in current phase
+Status: Phase complete
+Last activity: 2026-02-07 -- Completed 02-05 (client onboarding)
 
-Progress: [████████████████████████████████████████████░] 44% (8/18 plans)
+Progress: [█████████████████████████████████████████████] 50% (9/18 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~3.3 min
-- Total execution time: ~26 min
+- Total plans completed: 9
+- Average duration: ~3.1 min
+- Total execution time: ~28 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 4/4 | ~16 min | ~4 min |
-| 2 | 4/5 | ~10 min | ~2.5 min |
+| 2 | 5/5 | ~12 min | ~2.4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (~5m), 02-01 (~2m), 02-02 (~6m), 02-03 (~2m), 02-04 (~2m)
-- Trend: stable
+- Last 5 plans: 02-01 (~2m), 02-02 (~6m), 02-03 (~2m), 02-04 (~2m), 02-05 (~2m)
+- Trend: stable, efficient execution
 
 *Updated after each plan completion*
 
@@ -53,6 +53,7 @@ Recent decisions affecting current work:
 - 02-02: Kept DashboardScreen manual error pattern (already best); borderRadius hierarchy: xl for cards, lg for buttons, md for small buttons; replaced all text chevrons with Ionicons
 - 02-03: NetworkBanner in both login/auth branches; QueryClient retry max 2 for queries, 0 for mutations; Fragment wrappers to avoid extra layout nodes
 - 02-04: Kept Alert.alert for non-validation (photo permission, save errors); client picker uses custom error styling to match FormField; touched on picker close matches onBlur pattern
+- 02-05: Used FlatList with pagingEnabled for onboarding (no external library); onboarding gate applies only to client role; AsyncStorage flag pt_onboarding_complete persists completion
 
 ### Pending Todos
 
@@ -66,5 +67,13 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed 02-04-PLAN.md (02-01 through 02-04 done, 02-05 remaining)
+Stopped at: Completed Phase 2 (all 5 plans done)
 Resume file: None
+
+**Phase 2 Completion:**
+All UI polish and UX hardening objectives met:
+1. ✓ Consistent color palette, font sizes, spacing across all screens
+2. ✓ Loading states, empty states, error retry on all data-fetching screens
+3. ✓ Network awareness with offline banner and query retry configuration
+4. ✓ Inline form validation on all 4 form screens
+5. ✓ 4-page client onboarding flow for first-time users
