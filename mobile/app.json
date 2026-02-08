@@ -40,7 +40,7 @@
       ]
     ],
     "extra": {
-      "apiUrl": ""
+      "apiUrl": "https://pt-tracker-production-353a.up.railway.app"
     }
   }
 }
