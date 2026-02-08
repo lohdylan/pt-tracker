@@ -82,13 +82,13 @@ Plans:
   3. A privacy policy URL is accessible from within the app (e.g., settings screen) and covers data collection practices
   4. Running `eas build --platform ios` produces a signed .ipa file that installs and runs on a physical device via TestFlight
   5. App Store Connect has a complete listing with screenshots (at minimum iPhone 15 Pro size), description, keywords, and category
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: App naming, icon, and splash screen
-- [ ] 04-02: Privacy policy and legal
-- [ ] 04-03: EAS Build configuration for iOS production
-- [ ] 04-04: App Store listing (screenshots, description, metadata)
+- [ ] 04-01-PLAN.md -- Privacy policy (server route + HTML + in-app WebView screen)
+- [ ] 04-02-PLAN.md -- EAS Build config, expo-splash-screen install, app.json modernization
+- [ ] 04-03-PLAN.md -- Custom icon/splash assets + EAS production build attempt
+- [ ] 04-04-PLAN.md -- App Store listing metadata (description, keywords, review notes, screenshot guidance)
 
 ### Phase 5: App Store Submission
 **Goal**: The app is submitted to Apple and passes review
