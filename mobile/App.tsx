@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer, useNavigationContainerRef } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "./src/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthProvider, useAuth } from "./src/AuthContext";
 import LogoutButton from "./src/components/LogoutButton";
 import UnreadBadge from "./src/components/UnreadBadge";
@@ -50,6 +51,9 @@ import ClientChatScreen from "./src/screens/messages/ClientChatScreen";
 
 // Settings screens
 import NotificationSettingsScreen from "./src/screens/settings/NotificationSettingsScreen";
+
+// Onboarding
+import OnboardingScreen from "./src/screens/portal/OnboardingScreen";
 
 // Auth
 import LoginScreen from "./src/screens/auth/LoginScreen";
@@ -365,6 +369,18 @@ function AppContent() {
   const navigationRef = useNavigationContainerRef();
   const registerToken = useRegisterPushToken();
   const pushTokenRef = useRef<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+
+  // Check onboarding status for client users
+  useEffect(() => {
+    if (!user || user.role !== "client") {
+      setShowOnboarding(false);
+      return;
+    }
+    AsyncStorage.getItem("pt_onboarding_complete").then((value) => {
+      setShowOnboarding(value !== "true");
+    });
+  }, [user?.role, user?.clientId]);
 
   // Register for push notifications after auth
   useEffect(() => {
@@ -414,6 +430,23 @@ function AppContent() {
       <>
         <NetworkBanner />
         <LoginScreen />
+      </>
+    );
+  }
+
+  if (user.role === "client" && showOnboarding === null) {
+    return (
+      <View style={loadingStyles.container}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (user.role === "client" && showOnboarding) {
+    return (
+      <>
+        <NetworkBanner />
+        <OnboardingScreen onComplete={() => setShowOnboarding(false)} />
       </>
     );
   }
