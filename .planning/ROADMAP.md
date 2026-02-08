@@ -65,12 +65,12 @@ Plans:
   2. Production database has all 12 migrations applied and contains seed data for the trainer account
   3. Environment variables (JWT_SECRET, database URL) are set via the hosting provider's secret management -- not hardcoded
   4. Server errors are captured by a monitoring service and the trainer can be alerted when something breaks
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Deploy server and database to production hosting
-- [ ] 03-02: Production environment config, HTTPS, and secrets
-- [ ] 03-03: Error tracking and monitoring setup
+- [ ] 03-01-PLAN.md -- Production build config, Sentry integration, SSL-aware database
+- [ ] 03-02-PLAN.md -- S3 storage migration for file uploads, mobile production URL config
+- [ ] 03-03-PLAN.md -- Railway deployment, environment setup, and end-to-end verification
 
 ### Phase 4: App Store Preparation
 **Goal**: The app has a name, professional branding, privacy policy, production build config, and a complete App Store listing ready to submit
